@@ -1,0 +1,13 @@
+body { font-family: 'Segoe UI', sans-serif; background: #121212; color: #e0e0e0; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+
+.container { width: 95%; max-width: 1000px; background: #1e1e1e; padding: 30px; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.6); }
+
+h1 { color: #ffffff; margin-top: 0; font-size: 1.4rem; border-bottom: 1px solid #333; padding-bottom: 15px; display: flex; justify-content: space-between; }
+
+.top-box { background: #263238; padding: 15px; border-radius: 10px; margin-bottom: 25px; border-left: 5px solid #ffb300; }
+
+.top-box h3 { margin: 0 0 10px 0; font-size: 1rem; color: #ffb300; }
+
+#lista-procesos { list-style: none; padding: 0; margin: 0; font-family: 'Courier New', monospace; }
+
+#lista-procesos li { padding: 5px 0; border-bottom: 1px solid #37474f; display: flex; justify-content: space-between; }

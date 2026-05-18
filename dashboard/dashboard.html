@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Monitor IA</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="dashboardstyle.css">
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <span>DASHBOARD OPERATIVO</span>
+            <small style="font-size: 0.8rem; color: #757575;">Estado: En línea</small>
+        </h1>
+        
+        <div class="top-box">
+            <h3>PROCESOS DE ALTO IMPACTO (CPU)</h3>
+            <ul id="lista-procesos">
+                <li>Sincronizando con el sensor local...</li>
+            </ul>
+        </div>
+
+        <div class="top-box" style="border-left: 5px solid #ffffff; margin-top: 30px; background: #1a237e1a;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="color: #ffffff; margin: 0;">INFORME DE LA IA</h3>
+                <select id="report-history" style="background: #263238; color: white; border: 1px solid #333; padding: 5px; border-radius: 4px; cursor: pointer;">
+                    <option value="">Cargando historial...</option>
+                </select>
+            </div>
+            <div id="ia-report" style="white-space: pre-wrap; font-size: 0.9rem; line-height: 1.5; color: #cfd8dc;">
+                Selecciona una fecha para ver el análisis...
+            </div>
+        </div>
+
+        <canvas id="telemetryChart"></canvas>
+    </div>
+
+    <script>
+        const socket = io();
+        const ctx = document.getElementById('telemetryChart').getContext('2d');
+        
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: { labels: [], datasets: [
+                { label: 'CPU %', borderColor: '#00e676', data: [], tension: 0.1, pointRadius: 0 },
+                { label: 'RAM %', borderColor: '#2979ff', data: [], tension: 0.1, pointRadius: 0 },
+                { label: 'GPU %', borderColor: '#ff5252', data: [], tension: 0.1, pointRadius: 0 }
+            ]},
+            options: { 
+                responsive: true, 
+                scales: { y: { min: 0, max: 100 } },
+                animation: false
+            }
+        });
+
+        socket.on('data_update', (data) => {
+            const time = new Date().toLocaleTimeString();
+            
+            chart.data.labels.push(time);
+            chart.data.datasets[0].data.push(data.cpu);
+            chart.data.datasets[1].data.push(data.ram);
+            chart.data.datasets[2].data.push(data.gpu);
+
+            chart.update();
+
+            const lista = document.getElementById('lista-procesos');
+            lista.innerHTML = '';
+            data.top_procesos.forEach(p => {
+                lista.innerHTML += `<li><span>💻 ${p.nombre}</span> <span style="color: #ff5252;">${p.cpu}%</span></li>`;
+            });
+        });
+
+        fetch('/api/latest-report')
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('ia-report').innerText = data.content;
+        });
+        fetch('/api/metrics/today')
+            .then(res => res.json())
+            .then(data => {
+                data.forEach(m => {
+                    const time = new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    chart.data.labels.push(time);
+                    chart.data.datasets[0].data.push(m.cpu);
+                    chart.data.datasets[1].data.push(m.ram);
+                    chart.data.datasets[2].data.push(m.gpu);
+                });
+                chart.update();
+            });
+
+        socket.on('report_update', (data) => {
+        document.getElementById('ia-report').innerText = data.content;
+    });
+
+    const historySelect = document.getElementById('report-history');
+    async function loadHistory() {
+    const res = await fetch('/api/reports');
+    const reports = await res.json();
+    
+    historySelect.innerHTML = '<option value="">Seleccionar fecha...</option>';
+    reports.forEach(report => {
+        const date = new Date(report.timestamp).toLocaleDateString();
+        const time = new Date(report.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const option = document.createElement('option');
+        option.value = report._id;
+        option.textContent = `${date} - ${time}`;
+        historySelect.appendChild(option);
+    });
+    }   
+    historySelect.addEventListener('change', async (e) => {
+        if (!e.target.value) return;
+    
+            const res = await fetch(`/api/report/${e.target.value}`);
+            const data = await res.json();
+    document.getElementById('ia-report').innerText = data.content;
+    });
+    loadHistory();
+    socket.on('report_update', (data) => {
+    document.getElementById('ia-report').innerText = data.content;
+    loadHistory();
+    });
+    </script>
+</body>
+</html>
