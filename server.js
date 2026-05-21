@@ -148,12 +148,12 @@ app.get('/api/report/:id', async (req, res) => {
     }
 });
 
-cron.schedule('0 */6 * * *', async () => {
+cron.schedule('0 0,12 * * *', async () => {
     console.log("Iniciando análisis...");
-    const hace24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const hace12h = new Date(Date.now() - 12 * 60 * 60 * 1000);
     
     try {
-        const logs = await Metric.find({ timestamp: { $gte: hace24h } });
+        const logs = await Metric.find({ timestamp: { $gte: hace12h } });
         
         if (logs.length > 0) {
             let totalCpu = 0;
@@ -193,8 +193,9 @@ cron.schedule('0 */6 * * *', async () => {
 
             const prompt = `
             Actúa como un analista de sistemas automatizado.
-            Analiza esta telemetría y redacta un reporte diario en 3 viñetas técnicas.
+            Analiza esta telemetría y redacta un reporte que será entregado dos veces al día, en 3-4 viñetas técnicas.
             Analiza estos procesos. Para cada nombre de archivo detectado (ej. 'code.exe'), busca en internet a qué software comercial corresponde y úsalo en el reporte (ej. 'Visual Studio Code'). Si es un proceso del sistema de Windows, explícame brevemente qué función cumple.
+            Entrega el reporte en un texto simple.
             
             DATOS GLOBALES DEL SISTEMA:
             - Lecturas totales: ${logs.length}
