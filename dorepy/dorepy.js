@@ -4,7 +4,7 @@ const notifier = require('node-notifier');
 const os = require('os');
 const path = require('path');
 
-const API_URL = 'https://dorepy-ba1bf90a041c.herokuapp.com/api/metrics';
+const API_URL = 'https://dorepytests-a62ebedb226b.herokuapp.com/api/metrics';
 
 const nombreEquipo = os.hostname();
 
@@ -34,7 +34,7 @@ async function enviarDatos() {
             top_procesos: top3
         };
 
-        await axios.post(url, payload);
+        await axios.post(API_URL, payload);
         console.log(`[${new Date().toLocaleTimeString()}] [${nombreEquipo}] Enviado -> CPU: ${payload.cpu}% | RAM: ${payload.ram}% | GPU: ${payload.gpu}%`);
 
     } catch (e) {
