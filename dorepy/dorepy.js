@@ -4,7 +4,7 @@ const notifier = require('node-notifier');
 const os = require('os');
 const path = require('path');
 
-const url = 'http://localhost:3000/api/metrics';
+const API_URL = 'https://dorepy-ba1bf90a041c.herokuapp.com/api/metrics';
 
 const nombreEquipo = os.hostname();
 
