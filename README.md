@@ -1,4 +1,3 @@
-```markdown
 # Dorepy 🚀
 
 Dorepy es un sistema web integral de telemetría y monitorización de hardware en tiempo real. Actúa bajo una arquitectura IoT (Edge-to-Cloud) donde los equipos cliente reportan su estado de consumo (CPU, RAM, GPU y procesos) a un servidor centralizado. Además, cuenta con un agente automatizado de Inteligencia Artificial que audita periódicamente las métricas para generar diagnósticos en lenguaje natural.
@@ -74,9 +73,3 @@ Abre tu navegador web y dirígete a `http://localhost:3000`.
 ## 🤖 Arquitectura del Agente de IA
 
 El sistema utiliza un Cron Job configurado para evaluar el historial de métricas de los dispositivos. Al ejecutarse, extrae los promedios matemáticos y los procesos persistentes de la base de datos, estructurando un *prompt* dinámico. Este paquete de datos se envía al modelo generativo para recibir un análisis técnico del comportamiento del hardware y se guarda automáticamente para su consulta histórica.
-
-```
-
-Este `README.md` cubre toda la estructura de tu código (`server.js`, rutas, base de datos, sockets y la configuración del modelo de lenguaje). Te servirá perfectamente tanto para documentar tu código como para impresionar en tu entrega final.
-
-```
